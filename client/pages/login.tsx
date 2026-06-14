@@ -14,6 +14,7 @@ const roleDestinations: Record<string, string> = {
   customer: "/customer/home",
   marketer: "/crm/dashboard",
   operator: "/crm/dashboard",   // operator role maps to CRM
+  admin: "/crm/dashboard",      // admin role maps to CRM
 };
 
 export default function LoginPage() {
@@ -60,6 +61,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="text-white"
             />
             <Input
               type="password"
@@ -67,6 +69,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="text-white"
             />
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>

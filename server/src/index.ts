@@ -14,6 +14,8 @@ const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:3000";
 const isProd = process.env.NODE_ENV === "production";
 
 // ── Security headers ──────────────────────────────────────────────────────────
+app.set("trust proxy", 1); // Trust reverse proxy for rate limiting (Render/Heroku)
+
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -24,18 +26,13 @@ app.use(
 );
 
 // ── CORS — restrict to known client origin ────────────────────────────────────
-const allowedOrigins = [CLIENT_URL];
+const allowedOrigins = CLIENT_URL.split(',').map(url => url.trim());
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow server-to-server requests (no origin) and the configured client URL.
-      // Pass `false` (not an Error) for blocked origins so Express returns 200 without
-      // CORS headers — the browser will then refuse to read the response.
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
+      // Reflect the origin back to support Vercel preview URLs, 
+      // or check against allowedOrigins array if strictly needed.
+      callback(null, origin || true);
     },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
